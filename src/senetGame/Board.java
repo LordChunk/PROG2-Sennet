@@ -124,7 +124,7 @@ public class Board {
 		
 		// RULE 6
 		// row of 3 opponent's pawns 
-		ArrayList<Integer> opposingPawnLocations = getPawnsFromRange(currentLocation, distance, opposingPawn);
+		ArrayList<Integer> opposingPawnLocations = getTilesFromRange(currentLocation, distance, opposingPawn);
 		
 		// Check if there are at least 3 items in the array
 		// https://stackoverflow.com/questions/4940799/check-to-see-if-3-values-in-array-are-consecutive
@@ -140,7 +140,7 @@ public class Board {
 		
 		// RULE 8
 		if(valueOfNextField == 30) {
-			ArrayList<Integer> pawns = getPawnsFromRange(1, 19, currentPawn);
+			ArrayList<Integer> pawns = getTilesFromRange(1, 19, currentPawn);
 			
 			if(pawns.size() > 0) {
 				System.out.println("You cannot move your pawn to field 30 as not all of your pawns are on the last row yet.");
@@ -157,13 +157,21 @@ public class Board {
 		return true;
 	}
 	
-	private ArrayList<Integer> getPawnsFromRange(int startLocation, int distance, Tile PawnType) {
+	public boolean doesBoardContainTile(Tile tileType) {
+		if(getTilesFromRange(1, 29, tileType).size() == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	private ArrayList<Integer> getTilesFromRange(int startLocation, int distance, Tile tileType) {
 		ArrayList<Integer> pawnLocations = new ArrayList<Integer>();
 		
 		for (int i = startLocation; i <= startLocation+distance; i++) {
 			Tile tile = board.get(i);
 			// Get all pawns
-			if(tile == PawnType) {
+			if(tile == tileType) {
 				pawnLocations.add(i);
 			}
 		}

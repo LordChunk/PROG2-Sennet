@@ -35,10 +35,24 @@ public class Senet {
 		boolean won = false;
 		while (!won) {
 			turn(currentPlayer);
+			// Check if board still has any pawns of current player remaining
+			if (board.doesBoardContainTile(currentPlayer.getColourSign())) {
+				// Switch players
+				if(currentPlayer.equals(player1)) {
+					currentPlayer = player2;
+				} else {
+					currentPlayer = player1;
+				}
+			} else {
+				won = true;
+			}
 		}
+		
+		System.out.println(currentPlayer.getPlayerIdentifier() +" has won the game!");
 	}
 
 	private void turn(Player player) {
+		System.out.println(player.getPlayerIdentifier() +" starts their turn.");
 //		int diceValue = dice.throwSticks(player);
 		System.out.println("Enter your dice value");
 		int diceValue = Integer.parseInt(consoleIO.readInput());
