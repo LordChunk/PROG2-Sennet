@@ -62,7 +62,7 @@ public class Board {
 			board.put(currentLocation, opposingPawn);
 		}
 		
-		// Rule 3
+		// RULE 3
 		if(valueOfNextField == 27) {
 			for (int i = 1; i <= 10; i++) {
 				if(board.get(i) != Tile.DOT) {
@@ -72,7 +72,10 @@ public class Board {
 			}
 		}
 		
-		board.put(valueOfNextField, currentPawn);
+		// RULE 4
+		if (valueOfNextField != 30) {			
+			board.put(valueOfNextField, currentPawn);
+		}
 		this.print();
 	}
 
