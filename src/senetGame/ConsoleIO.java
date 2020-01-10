@@ -3,8 +3,6 @@ package senetGame;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import jdk.nashorn.internal.runtime.Undefined;
-
 /**
  * @author Bob van der Putten & Job van Ooik
  * @version 2

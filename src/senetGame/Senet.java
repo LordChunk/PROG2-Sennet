@@ -73,7 +73,7 @@ public class Senet {
 			diceValue = dice.throwSticks(player);
 		} else {			
 			System.out.println("Enter your dice value");
-			diceValue = Integer.parseInt(consoleIO.readInput());
+			diceValue = consoleIO.readInputInt();
 		}
 		System.out.println(player.getPlayerIdentifier() +" threw: "+ diceValue +".");
 		
