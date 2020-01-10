@@ -20,12 +20,9 @@ public class Board {
 				board.put(i, Tile.DOT);
 			}
 			
-			// DEBUG
-			if (i == 11 ||i == 12) {
-				
-				board.put(i, Tile.X);
-			}
 		}
+		// Move pawn into correct starting position 
+		move(10, 1, false);
 	}
 	
 	public void print() {
@@ -48,47 +45,73 @@ public class Board {
 		System.out.println("+----------+");
 	}
 	
-	public void move(int index, int distance) {
-		Tile currentPawn = board.get(index);
+	public void move(int currentLocation, int distance, boolean verify) {
+		Tile currentPawn = board.get(currentLocation);
+		Tile opposingPawn = currentPawn.equals(Tile.X) ? Tile.O : Tile.X;
+		int valueOfNextField = currentLocation+distance;
 		
-		// Does your next position have a pawn of you
-//		if(board.get(index+distance).equals(currentPawn)) {
-//			return false;
-//		}
+		// Verify move
+		if(verify && !moveVerifier(currentLocation, distance)) {			
+			return;
+		}
+		// Reset current field
+		board.put(currentLocation, Tile.DOT);
 		
-		board.put(index+distance, currentPawn);
-		board.put(index, Tile.DOT);
+		// RULE 2
+		if(board.get(valueOfNextField).equals(opposingPawn)) {
+			board.put(currentLocation, opposingPawn);
+		}
+		
+		// Rule 3
+		if(valueOfNextField == 27) {
+			for (int i = 1; i <= 10; i++) {
+				if(board.get(i) != Tile.DOT) {
+					board.put(i, currentPawn);
+					break;
+				}
+			}
+		}
+		
+		board.put(valueOfNextField, currentPawn);
 		this.print();
 	}
+
 	
 	public boolean moveVerifier(int currentLocation, int distance) {
 		Tile currentPawn = board.get(currentLocation);
 		Tile opposingPawn = currentPawn.equals(Tile.X) ? Tile.O : Tile.X;
+		int valueOfNextField = currentLocation+distance;
 		
+		// RULE X
 		// Does your next position have a pawn of you
-		if(board.get(currentLocation+distance).equals(currentPawn)) {
+		if(board.get(valueOfNextField).equals(currentPawn)) {
 			System.out.println("Next location is already occupied by one of your own pawns.");
 			return false;
 		}
 		
-		// check if pawns are a group of 2
+		/*
+		 * Rule 1 is checked for by RULE 2 checking against all other rules
+		 */
+		
+		// RULE 1
 		if(board.get(currentLocation+distance).equals(opposingPawn)) {
+			// RULE 2
 			// One in front of the pawn and one behind the pawn
-			if (board.get(currentLocation+distance -1 ).equals(opposingPawn) || board.get(currentLocation+distance +1).equals(opposingPawn)) {	
+			if (board.get(valueOfNextField -1 ).equals(opposingPawn) || board.get(valueOfNextField +1).equals(opposingPawn)) {	
 				System.out.println("Next location of pawn has two of your opponent's pawns standing next to each other.");
+				return false;
+			}
+			
+			// RULE 7
+			if(valueOfNextField == 26 || valueOfNextField == 28 || valueOfNextField == 29) {
+				System.out.println("Your opponent already has a pawn in protected field "+ valueOfNextField +".");
 				return false;
 			}
 		}
 		
-		// row of 3 opponent's pawns
-		ArrayList<Integer> opposingPawnLocations = new ArrayList<Integer>();
-		for (int i = currentLocation; i <= currentLocation+distance; i++) {
-			Tile tile = board.get(i);
-			// Get all pawns
-			if(tile == opposingPawn) {
-				opposingPawnLocations.add(i);
-			}
-		}
+		// RULE 6
+		// row of 3 opponent's pawns 
+		ArrayList<Integer> opposingPawnLocations = getPawnsFromRange(currentLocation, distance, opposingPawn);
 		
 		// Check if there are at least 3 items in the array
 		// https://stackoverflow.com/questions/4940799/check-to-see-if-3-values-in-array-are-consecutive
@@ -102,7 +125,36 @@ public class Board {
 			}
 		}
 		
+		// RULE 8
+		if(valueOfNextField == 30) {
+			ArrayList<Integer> pawns = getPawnsFromRange(1, 19, currentPawn);
+			
+			if(pawns.size() > 0) {
+				System.out.println("You cannot move your pawn to field 30 as not all of your pawns are on the last row yet.");
+				return false;
+			}
+		}
+		
+		// RULE 9
+		if(valueOfNextField > 30) {
+			System.out.println("You cannot move to past field 30.");
+			return false;
+		}
 		
 		return true;
+	}
+	
+	private ArrayList<Integer> getPawnsFromRange(int startLocation, int distance, Tile PawnType) {
+		ArrayList<Integer> pawnLocations = new ArrayList<Integer>();
+		
+		for (int i = startLocation; i <= startLocation+distance; i++) {
+			Tile tile = board.get(i);
+			// Get all pawns
+			if(tile == PawnType) {
+				pawnLocations.add(i);
+			}
+		}
+		
+		return pawnLocations;
 	}
 }

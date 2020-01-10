@@ -18,11 +18,6 @@ public class Senet {
 		System.out.println(startingPlayer +" starts.");
 		
 		board = new Board();
-		board.print();
-		
-		// DEBUG
-		
-		board.moveVerifier(9, 4);
 	}
 
 
