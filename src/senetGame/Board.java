@@ -157,12 +157,8 @@ public class Board {
 		return true;
 	}
 	
-	public boolean doesBoardContainTile(Tile tileType) {
-		if(getTilesFromRange(1, 29, tileType).size() == 0) {
-			return false;
-		} else {
-			return true;
-		}
+	public ArrayList<Integer> getAllTileLocationsOfType(Tile tileType) {
+		return getTilesFromRange(1, 29, tileType);
 	}
 	
 	private ArrayList<Integer> getTilesFromRange(int startLocation, int distance, Tile tileType) {
@@ -177,5 +173,17 @@ public class Board {
 		}
 		
 		return pawnLocations;
+	}
+	
+	public boolean checkForAnyValidMoves(int diceValue, Tile tile) {
+		ArrayList<Integer> allTileLocations = getAllTileLocationsOfType(tile);
+		boolean allMovesAreInvalid = true;
+		for (Integer tileLocation : allTileLocations) {
+			if(moveVerifier(tileLocation, diceValue)) {
+				allMovesAreInvalid = false;
+			}
+		}
+		
+		return !allMovesAreInvalid;
 	}
 }

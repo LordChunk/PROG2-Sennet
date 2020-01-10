@@ -1,5 +1,4 @@
 package senetGame;
-
 public class Senet {
 	
 	private Player player1;
@@ -36,7 +35,7 @@ public class Senet {
 		while (!won) {
 			turn(currentPlayer);
 			// Check if board still has any pawns of current player remaining
-			if (board.doesBoardContainTile(currentPlayer.getColourSign())) {
+			if (board.getAllTileLocationsOfType(currentPlayer.getColourSign()).size() != 0) {
 				// Switch players
 				if(currentPlayer.equals(player1)) {
 					currentPlayer = player2;
@@ -58,31 +57,35 @@ public class Senet {
 		int diceValue = Integer.parseInt(consoleIO.readInput());
 		System.out.println(player.getPlayerIdentifier() +" threw: "+ diceValue +".");
 		
-		boolean selectedValidPawn = false;
-		int pawnLocation = -1;
-		
-		while (!selectedValidPawn) {
-			System.out.println("Which pawn do you want to move?");
-			pawnLocation = -1;
-			while (pawnLocation == -1) {
-				try {
-					String pawnLocationString = consoleIO.readInput();
-					pawnLocation = Integer.parseInt(pawnLocationString);
-				} catch (Exception e) {
-					System.out.println("Your input was invalid. Please enter a valid value.");
+		// Check if there are any valid moves
+		if(board.checkForAnyValidMoves(diceValue, player.getColourSign())) {			
+			boolean selectedValidPawn = false;
+			int pawnLocation = -1;
+			
+			while (!selectedValidPawn) {
+				System.out.println("Which pawn do you want to move?");
+				pawnLocation = -1;
+				while (pawnLocation == -1) {
+					try {
+						String pawnLocationString = consoleIO.readInput();
+						pawnLocation = Integer.parseInt(pawnLocationString);
+					} catch (Exception e) {
+						System.out.println("Your input was invalid. Please enter a valid value.");
+					}
 				}
+				
+				if(board.get(pawnLocation) == player.getColourSign()) {
+					selectedValidPawn = board.move(pawnLocation, diceValue, true);
+				} else {
+					System.out.println("The field you selected does not contain one of your pawns.");
+				}			
 			}
 			
-			if(board.get(pawnLocation) == player.getColourSign()) {
-				selectedValidPawn = board.move(pawnLocation, diceValue, true);
-			} else {
-				System.out.println("The field you selected does not contain one of your pawns.");
-			}			
-		}
-		
-		int nextLocation = pawnLocation+diceValue;
-		System.out.println(player.getPlayerIdentifier() +": moved their pawn from: "+ pawnLocation +" -> "+ nextLocation);
-		
+			int nextLocation = pawnLocation+diceValue;
+			System.out.println(player.getPlayerIdentifier() +": moved their pawn from: "+ pawnLocation +" -> "+ nextLocation);
+		} else {
+			System.out.println("There were no valid moves.");
+		}		
 	}
 
 	// true = player 1 and false = player2
