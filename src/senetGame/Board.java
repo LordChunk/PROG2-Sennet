@@ -7,22 +7,35 @@ public class Board {
 	
 	private HashMap<Integer, Tile> board = new HashMap<Integer, Tile>();
 	
-	public Board() {
+	public Board(int playMode) {
 		int boardSize = 30;
 		
-		// For loop starts at 1 to easily identify the actual spot on the board
-		for (int i = 1; i <= boardSize; i++) {
-			if(i % 2 == 1 && i <= 10) {
-				board.put(i, Tile.O);
-			} else if(i % 2 == 0 && i <= 10) {
-				board.put(i, Tile.X);
-			} else {
+		if (playMode == 0) {			
+			// For loop starts at 1 to easily identify the actual spot on the board
+			for (int i = 1; i <= boardSize; i++) {
+				if(i % 2 == 1 && i <= 10) {
+					board.put(i, Tile.O);
+				} else if(i % 2 == 0 && i <= 10) {
+					board.put(i, Tile.X);
+				} else {
+					board.put(i, Tile.DOT);
+				}
+				
+			}
+			// Move pawn into correct starting position 
+			move(10, 1, false);
+		} else if(playMode == 1) {
+			for (int i = 1; i <= boardSize; i++) {
 				board.put(i, Tile.DOT);
 			}
+			board.put(22, Tile.O);
+			board.put(23, Tile.O);
+			board.put(24, Tile.O);
 			
+			board.put(29, Tile.X);
+			
+			print();
 		}
-		// Move pawn into correct starting position 
-		move(10, 1, false);
 	}
 	
 	public Tile get(int key) {
@@ -55,7 +68,7 @@ public class Board {
 		int valueOfNextField = currentLocation+distance;
 		
 		// Verify move
-		if(verify && !moveVerifier(currentLocation, distance)) {			
+		if(verify && !moveVerifier(currentLocation, distance, true)) {			
 			return false;
 		}
 		// Reset current field
@@ -69,7 +82,7 @@ public class Board {
 		// RULE 3
 		if(valueOfNextField == 27) {
 			for (int i = 1; i <= 10; i++) {
-				if(board.get(i) != Tile.DOT) {
+				if(board.get(i) == Tile.DOT) {
 					board.put(i, currentPawn);
 					break;
 				}
@@ -77,7 +90,7 @@ public class Board {
 		}
 		
 		// RULE 4
-		if (valueOfNextField != 30) {			
+		if (valueOfNextField != 30 || valueOfNextField != 27) {			
 			board.put(valueOfNextField, currentPawn);
 		}
 		this.print();
@@ -85,20 +98,20 @@ public class Board {
 	}
 
 	
-	public boolean moveVerifier(int currentLocation, int distance) {
-		// input sanitation
-		if (currentLocation > 30 || currentLocation < 1) {
-			System.out.println("Input out of bounds. Please check your dice and location values.");
-			return false;
-		}
+	public boolean moveVerifier(int currentLocation, int distance, boolean printValidation) {
 		Tile currentPawn = board.get(currentLocation);
 		Tile opposingPawn = currentPawn.equals(Tile.X) ? Tile.O : Tile.X;
 		int valueOfNextField = currentLocation+distance;
+		// input sanitation
+		if (currentLocation > 30 || currentLocation < 1 || valueOfNextField > 30 || valueOfNextField < 1) {
+//			System.out.println("Input out of bounds. Please check your dice and location values.");
+			return false;
+		}
 		
 		// RULE X
 		// Does your next position have a pawn of you
 		if(board.get(valueOfNextField).equals(currentPawn)) {
-			System.out.println("Next location is already occupied by one of your own pawns.");
+			if (printValidation) { System.out.println("Next location is already occupied by one of your own pawns."); } 
 			return false;
 		}
 		
@@ -111,13 +124,13 @@ public class Board {
 			// RULE 2
 			// One in front of the pawn and one behind the pawn
 			if (board.get(valueOfNextField -1 ).equals(opposingPawn) || board.get(valueOfNextField +1).equals(opposingPawn)) {	
-				System.out.println("Next location of pawn has two of your opponent's pawns standing next to each other.");
+				if (printValidation) { System.out.println("Next location of pawn has two of your opponent's pawns standing next to each other."); }
 				return false;
 			}
 			
 			// RULE 7
 			if(valueOfNextField == 26 || valueOfNextField == 28 || valueOfNextField == 29) {
-				System.out.println("Your opponent already has a pawn in protected field "+ valueOfNextField +".");
+				if (printValidation) { System.out.println("Your opponent already has a pawn in protected field "+ valueOfNextField +"."); }
 				return false;
 			}
 		}
@@ -132,7 +145,7 @@ public class Board {
 			for (int i = 0; i < opposingPawnLocations.size() -2; i++) {
 			    if (opposingPawnLocations.get(i + 1) == opposingPawnLocations.get(i) + 1 
 		    		&& opposingPawnLocations.get(i + 2) == opposingPawnLocations.get(i) + 2) {
-			    		System.out.println("Your pawn is blocked by 3 consecutive pawns from your opponent");
+			    		if (printValidation) { System.out.println("Your pawn is blocked by 3 consecutive pawns from your opponent"); }
 			    		return false;
 			    	}
 			}
@@ -143,14 +156,14 @@ public class Board {
 			ArrayList<Integer> pawns = getTilesFromRange(1, 19, currentPawn);
 			
 			if(pawns.size() > 0) {
-				System.out.println("You cannot move your pawn to field 30 as not all of your pawns are on the last row yet.");
+				if (printValidation) { System.out.println("You cannot move your pawn to field 30 as not all of your pawns are on the last row yet."); }
 				return false;
 			}
 		}
 		
 		// RULE 9
 		if(valueOfNextField > 30) {
-			System.out.println("You cannot move to past field 30.");
+			if (printValidation) { System.out.println("You cannot move to past field 30."); }
 			return false;
 		}
 		
@@ -179,7 +192,7 @@ public class Board {
 		ArrayList<Integer> allTileLocations = getAllTileLocationsOfType(tile);
 		boolean allMovesAreInvalid = true;
 		for (Integer tileLocation : allTileLocations) {
-			if(moveVerifier(tileLocation, diceValue)) {
+			if(moveVerifier(tileLocation, diceValue, false)) {
 				allMovesAreInvalid = false;
 			}
 		}

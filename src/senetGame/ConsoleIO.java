@@ -3,6 +3,8 @@ package senetGame;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import jdk.nashorn.internal.runtime.Undefined;
+
 /**
  * @author Bob van der Putten & Job van Ooik
  * @version 2
@@ -36,6 +38,22 @@ public class ConsoleIO
             writeOutput("AII - Something went wrong: " + e.getMessage());
         }
         return returnString;
+    }
+    
+    public Integer readInputInt() {
+    	String unparsedValue;
+    	Integer parsedValue = null;
+    	
+    	while(parsedValue == null) {    		
+    		try {
+    			unparsedValue = readInput();
+    			parsedValue = Integer.parseInt(unparsedValue);
+    		} catch (Exception e) {
+    			System.out.println("Your input was invalid. Please enter a valid value.");
+    		}
+    	}
+    	
+    	return parsedValue;
     }
     
     // This should be no problem for you:
