@@ -30,6 +30,12 @@ public class Dice {
 		}
 	}
 	
+	public Integer throwSticks(Player player) {
+		return throwSticks(player.getPlayerIdentifier());
+	}
+	
+	
+	
 	
 	private int calculateNumberOfBlackSticks(int numberOfSticks) {
 		int numberBlacks = 0;

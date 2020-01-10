@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 public class Board {
 	
-	HashMap<Integer, Tile> board = new HashMap<Integer, Tile>();
+	private HashMap<Integer, Tile> board = new HashMap<Integer, Tile>();
 	
 	public Board() {
 		int boardSize = 30;
@@ -23,6 +23,10 @@ public class Board {
 		}
 		// Move pawn into correct starting position 
 		move(10, 1, false);
+	}
+	
+	public Tile get(int key) {
+		return board.get(key);
 	}
 	
 	public void print() {
@@ -45,14 +49,14 @@ public class Board {
 		System.out.println("+----------+");
 	}
 	
-	public void move(int currentLocation, int distance, boolean verify) {
+	public boolean move(int currentLocation, int distance, boolean verify) {
 		Tile currentPawn = board.get(currentLocation);
 		Tile opposingPawn = currentPawn.equals(Tile.X) ? Tile.O : Tile.X;
 		int valueOfNextField = currentLocation+distance;
 		
 		// Verify move
 		if(verify && !moveVerifier(currentLocation, distance)) {			
-			return;
+			return false;
 		}
 		// Reset current field
 		board.put(currentLocation, Tile.DOT);
@@ -77,10 +81,16 @@ public class Board {
 			board.put(valueOfNextField, currentPawn);
 		}
 		this.print();
+		return true;
 	}
 
 	
 	public boolean moveVerifier(int currentLocation, int distance) {
+		// input sanitation
+		if (currentLocation > 30 || currentLocation < 1) {
+			System.out.println("Input out of bounds. Please check your dice and location values.");
+			return false;
+		}
 		Tile currentPawn = board.get(currentLocation);
 		Tile opposingPawn = currentPawn.equals(Tile.X) ? Tile.O : Tile.X;
 		int valueOfNextField = currentLocation+distance;

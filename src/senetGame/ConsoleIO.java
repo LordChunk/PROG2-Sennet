@@ -4,8 +4,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 /**
- * @author Bob van der Putten
- * @version 1
+ * @author Bob van der Putten & Job van Ooik
+ * @version 2
  */
 public class ConsoleIO
 {
@@ -22,11 +22,13 @@ public class ConsoleIO
     {
         // Give returnstring a temp value so it 
         // resembles an error when nothing was read:
-        String returnString = "ERROR";
+        String returnString = "";
         try
         {
-            // Try to read a line of text:
-            returnString = br.readLine();
+        	while(returnString.trim().length() == 0) {        		
+        		// Try to read a line of text:
+        		returnString = br.readLine();
+        	}
         }
         catch(Exception e)        
         {
